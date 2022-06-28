@@ -1,0 +1,76 @@
+{
+    "name": "ukponolinux-vm",
+    "id": "/subscriptions/95f7e254-1fec-4a38-8c25-b5e55c61056a/resourceGroups/ukpono-test/providers/Microsoft.Compute/virtualMachines/ukponolinux-vm",
+    "type": "Microsoft.Compute/virtualMachines",
+    "location": "eastus2",
+    "tags": {
+        "displayName": "ukpono-testukponolinux-vm"
+    },
+    "properties": {
+        "vmId": "2f9a5849-5784-4dbf-8f92-554f81da0cb3",
+        "hardwareProfile": {
+            "vmSize": "Standard_B2ms"
+        },
+        "storageProfile": {
+            "imageReference": {
+                "publisher": "Canonical",
+                "offer": "UbuntuServer",
+                "sku": "16.04-LTS",
+                "version": "latest"
+            },
+            "osDisk": {
+                "osType": "Linux",
+                "name": "ukponoOSDisk",
+                "createOption": "FromImage",
+                "caching": "ReadWrite",
+                "managedDisk": {
+                    "storageAccountType": "Premium_LRS",
+                    "id": "/subscriptions/95f7e254-1fec-4a38-8c25-b5e55c61056a/resourceGroups/ukpono-test/providers/Microsoft.Compute/disks/ukponoOSDisk"
+                },
+                "diskSizeGB": 30
+            },
+            "dataDisks": []
+        },
+        "osProfile": {
+            "computerName": "ukponoobott",
+            "adminUsername": "ukpono",
+            "linuxConfiguration": {
+                "disablePasswordAuthentication": false
+            },
+            "secrets": []
+        },
+        "networkProfile": {
+            "networkInterfaces": [
+                {
+                    "id": "/subscriptions/95f7e254-1fec-4a38-8c25-b5e55c61056a/resourceGroups/ukpono-test/providers/Microsoft.Network/networkInterfaces/ukpono-NetworkInterface"
+                }
+            ]
+        },
+        "diagnosticsProfile": {
+            "bootDiagnostics": {
+                "enabled": true,
+                "storageUri": "https://ukponosa.blob.core.windows.net/"
+            }
+        },
+        "provisioningState": "Succeeded"
+    },
+    "resources": [
+        {
+            "name": "OMSExtension",
+            "id": "/subscriptions/95f7e254-1fec-4a38-8c25-b5e55c61056a/resourceGroups/ukpono-test/providers/Microsoft.Compute/virtualMachines/ukponolinux-vm/extensions/OMSExtension",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "location": "eastus2",
+            "properties": {
+                "autoUpgradeMinorVersion": false,
+                "provisioningState": "Succeeded",
+                "publisher": "Microsoft.EnterpriseCloud.Monitoring",
+                "type": "OmsAgentForLinux",
+                "typeHandlerVersion": "1.13",
+                "settings": {
+                    "workspaceId": "22f699a2-5ef1-4fc5-9a81-157a8fa5e96f",
+                    "skipDockerProviderInstall": true
+                }
+            }
+        }
+    ]
+}

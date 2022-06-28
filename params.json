@@ -8,6 +8,13 @@
 
         "prefix": {
             "value": "ukpono"
-        }
+        },
+
+        "workspaceName": {
+            "value": "MyWorkspace"
+          },
+          "location": {
+            "value": "eastus"
+          }
     }
 }

@@ -18,6 +18,21 @@
             "metadata": {
                 "description": "description"
             }
+        },
+
+        "workspaceName": {
+            "type": "string",
+            "defaultValue": "MyWorkspace",
+            "metadata": {
+                "description": "Name of the workspace."
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "eastus2",
+            "metadata": {
+              "description": "Specifies the location in which to create the workspace."
+            }
         }
 
     },
@@ -154,6 +169,30 @@
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2021-03-01",
             "location": "[resourceGroup().location]",
+            "resources": [
+                {
+                    "type": "extensions",
+                    "name": "OMSExtension",
+                    "apiVersion": "2018-06-01",
+                    "location": "eastus2",
+                    "dependsOn": [
+                      "[concat('Microsoft.Compute/virtualMachines/', 'ukponolinux-vm')]"
+                    ],
+                    "properties": {
+                      "publisher": "Microsoft.EnterpriseCloud.Monitoring",
+                      "type": "OmsAgentForLinux",
+                      "typeHandlerVersion": "1.13",
+                      "settings": {
+                        "workspaceId": "22f699a2-5ef1-4fc5-9a81-157a8fa5e96f",
+                        "skipDockerProviderInstall": true
+                      }
+                      ,
+                      "protectedSettings": {
+                        "workspaceKey": "QgMtPKrBN/YMPs8ku91GNpMGMiSg9BKC6UWA5e2NB/uxLiv69x0g7vxq2LCdKGNlYi358jhtajEB1IBf8Qz9Ew=="
+                      }
+                    }
+                  }
+            ],
             "dependsOn": [
                 "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('prefix'), '-NetworkInterface'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', concat(parameters('prefix'), 'sa'))]"
@@ -167,7 +206,7 @@
                 },
                 "osProfile": {
                     "computerName": "ukponoobott",
-                    "adminUsername": "user",
+                    "adminUsername": "ukpono",
                     "adminPassword": "test@1234"
                 },
                 "storageProfile": {
@@ -197,6 +236,97 @@
                     }
                 }
             }
-        }],
+        },
+
+
+        {
+            "apiVersion": "2020-08-01",
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "name": "[parameters('workspaceName')]",
+            "location": "[parameters('location')]",
+            "resources": [
+                {
+                    "type": "datasources",
+                    "apiVersion": "2020-08-01",
+                    "name": "SyslogKern",
+                    "dependsOn": [
+                        "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
+                    ],
+                    "kind": "LinuxSyslog",
+                    "properties": {
+                        "syslogName": "kern",
+                        "syslogSeverities": [
+                            {
+                                "severity": "emerg"
+                            },
+                            {
+                                "severity": "alert"
+                            },
+                            {
+                                "severity": "crit"
+                            },
+                            {
+                                "severity": "err"
+                            },
+                            {
+                                "severity": "warning"
+                            },
+                            {
+                                "severity": "notice"
+                            },
+                            {
+                                "severity": "info"
+                            },
+                            {
+                                "severity": "debug"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "type": "datasources",
+                    "apiVersion": "2020-08-01",
+                    "name": "SyslogDaemon",
+                    "dependsOn": [
+                        "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
+                    ],
+                    "kind": "LinuxSyslog",
+                    "properties": {
+                        "syslogName": "daemon",
+                        "syslogSeverities": [
+                            {
+                                "severity": "emerg"
+                            },
+                            {
+                                "severity": "alert"
+                            },
+                            {
+                                "severity": "crit"
+                            },
+                            {
+                                "severity": "err"
+                            },
+                            {
+                                "severity": "warning"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "apiVersion": "2020-08-01",
+                    "type": "datasources",
+                    "name": "SyslogCollection",
+                    "dependsOn": [
+                        "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
+                    ],
+                    "kind": "LinuxSyslogCollection",
+                    "properties": {
+                        "state": "Enabled"
+                    }
+                }
+            ]
+          }
+    
+    ],
     "outputs": {}
 }
